@@ -189,6 +189,33 @@ public final class Reminders {
         semaphore.wait()
     }
 
+    func deleteList(withName name: String) {
+        let calendar = self.calendar(withName: name)
+        let semaphore = DispatchSemaphore(value: 0)
+
+        self.reminders(on: [calendar], displayOptions: .all) { reminders in
+            if !reminders.isEmpty {
+                let completed = reminders.filter { $0.isCompleted }.count
+                let incomplete = reminders.count - completed
+                print("List '\(name)' is not empty: \(incomplete) incomplete, \(completed) completed")
+                print("Move or delete all reminders first")
+                exit(1)
+            }
+
+            do {
+                try Store.removeCalendar(calendar, commit: true)
+                print("Deleted list '\(name)'")
+            } catch let error {
+                print("Failed to delete list with error: \(error)")
+                exit(1)
+            }
+
+            semaphore.signal()
+        }
+
+        semaphore.wait()
+    }
+
     func newList(with name: String, source requestedSourceName: String?) {
         let store = EKEventStore()
         let sources = store.sources

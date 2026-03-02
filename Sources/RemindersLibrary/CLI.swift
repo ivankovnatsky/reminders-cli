@@ -368,6 +368,20 @@ private struct NewList: ParsableCommand {
     }
 }
 
+private struct DeleteList: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Delete a list")
+
+    @Argument(
+        help: "The name of the list to delete, see 'show-lists' for names",
+        completion: .custom(listNameCompletion))
+    var listName: String
+
+    func run() {
+        reminders.deleteList(withName: self.listName)
+    }
+}
+
 public struct CLI: ParsableCommand {
     public static let configuration = CommandConfiguration(
         commandName: "reminders",
@@ -377,6 +391,7 @@ public struct CLI: ParsableCommand {
             Complete.self,
             Uncomplete.self,
             Delete.self,
+            DeleteList.self,
             Edit.self,
             Move.self,
             Show.self,

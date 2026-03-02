@@ -234,7 +234,7 @@ public final class Reminders {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [calendar], displayOptions: .incomplete) { reminders in
+        self.reminders(on: [calendar], displayOptions: .all) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(name)")
                 exit(1)
@@ -314,7 +314,7 @@ public final class Reminders {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [calendar], displayOptions: .incomplete) { reminders in
+        self.reminders(on: [calendar], displayOptions: .all) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(name)")
                 exit(1)

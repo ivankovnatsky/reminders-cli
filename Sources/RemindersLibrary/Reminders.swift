@@ -283,9 +283,11 @@ public final class Reminders {
         semaphore.wait()
     }
 
-    func move(itemAtIndex index: String, fromListNamed sourceName: String, toListNamed targetName: String, displayOptions: DisplayOptions = .incomplete) {
+    func move(itemAtIndex index: String, fromListNamed sourceName: String, toListNamed targetName: String, createList: Bool = false, displayOptions: DisplayOptions = .incomplete) {
         let sourceCalendar = self.calendar(withName: sourceName)
-        let targetCalendar = self.calendar(withName: targetName)
+        let targetCalendar = createList
+            ? self.calendarOrCreate(withName: targetName, source: sourceCalendar.source)
+            : self.calendar(withName: targetName)
         let semaphore = DispatchSemaphore(value: 0)
 
         self.reminders(on: [sourceCalendar], displayOptions: displayOptions) { reminders in
@@ -417,6 +419,25 @@ public final class Reminders {
             return !reminder.isCompleted
         case .complete:
             return reminder.isCompleted
+        }
+    }
+
+    private func calendarOrCreate(withName name: String, source: EKSource) -> EKCalendar {
+        if let calendar = self.getCalendars().find(where: { $0.title.lowercased() == name.lowercased() }) {
+            return calendar
+        }
+
+        let newCalendar = EKCalendar(for: .reminder, eventStore: Store)
+        newCalendar.title = name
+        newCalendar.source = source
+
+        do {
+            try Store.saveCalendar(newCalendar, commit: true)
+            print("Created list '\(name)'")
+            return newCalendar
+        } catch let error {
+            print("Failed to create list with error: \(error)")
+            exit(1)
         }
     }
 

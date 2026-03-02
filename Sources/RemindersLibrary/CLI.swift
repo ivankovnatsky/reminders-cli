@@ -321,6 +321,9 @@ private struct Move: ParsableCommand {
         completion: .custom(listNameCompletion))
     var toListName: String
 
+    @Flag(help: "Create the destination list if it doesn't exist")
+    var create = false
+
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
@@ -346,6 +349,7 @@ private struct Move: ParsableCommand {
             itemAtIndex: self.index,
             fromListNamed: self.fromListName,
             toListNamed: self.toListName,
+            createList: self.create,
             displayOptions: displayOptions)
     }
 }

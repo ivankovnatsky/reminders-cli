@@ -265,6 +265,32 @@ private struct Edit: ParsableCommand {
 }
 
 
+private struct Move: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Move a reminder to a different list")
+
+    @Argument(
+        help: "The list to move a reminder from, see 'show-lists' for names",
+        completion: .custom(listNameCompletion))
+    var fromListName: String
+
+    @Argument(
+        help: "The index or id of the reminder to move, see 'show' for indexes")
+    var index: String
+
+    @Argument(
+        help: "The list to move the reminder to, see 'show-lists' for names",
+        completion: .custom(listNameCompletion))
+    var toListName: String
+
+    func run() {
+        reminders.move(
+            itemAtIndex: self.index,
+            fromListNamed: self.fromListName,
+            toListNamed: self.toListName)
+    }
+}
+
 private struct NewList: ParsableCommand {
     static let configuration = CommandConfiguration(
         abstract: "Create a new list")
@@ -293,6 +319,7 @@ public struct CLI: ParsableCommand {
             Uncomplete.self,
             Delete.self,
             Edit.self,
+            Move.self,
             Show.self,
             ShowLists.self,
             NewList.self,

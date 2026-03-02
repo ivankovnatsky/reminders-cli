@@ -256,6 +256,32 @@ public final class Reminders {
         semaphore.wait()
     }
 
+    func move(itemAtIndex index: String, fromListNamed sourceName: String, toListNamed targetName: String) {
+        let sourceCalendar = self.calendar(withName: sourceName)
+        let targetCalendar = self.calendar(withName: targetName)
+        let semaphore = DispatchSemaphore(value: 0)
+
+        self.reminders(on: [sourceCalendar], displayOptions: .incomplete) { reminders in
+            guard let reminder = self.getReminder(from: reminders, at: index) else {
+                print("No reminder at index \(index) on \(sourceName)")
+                exit(1)
+            }
+
+            do {
+                reminder.calendar = targetCalendar
+                try Store.save(reminder, commit: true)
+                print("Moved '\(reminder.title!)' from '\(sourceName)' to '\(targetCalendar.title)'")
+            } catch let error {
+                print("Failed to move reminder with error: \(error)")
+                exit(1)
+            }
+
+            semaphore.signal()
+        }
+
+        semaphore.wait()
+    }
+
     func setComplete(_ complete: Bool, itemAtIndex index: String, onListNamed name: String) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)

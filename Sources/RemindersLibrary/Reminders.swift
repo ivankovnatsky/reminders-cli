@@ -230,11 +230,11 @@ public final class Reminders {
         }
     }
 
-    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?) {
+    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, displayOptions: DisplayOptions = .incomplete) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [calendar], displayOptions: .all) { reminders in
+        self.reminders(on: [calendar], displayOptions: displayOptions) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(name)")
                 exit(1)
@@ -256,12 +256,12 @@ public final class Reminders {
         semaphore.wait()
     }
 
-    func move(itemAtIndex index: String, fromListNamed sourceName: String, toListNamed targetName: String) {
+    func move(itemAtIndex index: String, fromListNamed sourceName: String, toListNamed targetName: String, displayOptions: DisplayOptions = .incomplete) {
         let sourceCalendar = self.calendar(withName: sourceName)
         let targetCalendar = self.calendar(withName: targetName)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [sourceCalendar], displayOptions: .all) { reminders in
+        self.reminders(on: [sourceCalendar], displayOptions: displayOptions) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(sourceName)")
                 exit(1)
@@ -310,11 +310,11 @@ public final class Reminders {
         semaphore.wait()
     }
 
-    func delete(itemAtIndex index: String, onListNamed name: String) {
+    func delete(itemAtIndex index: String, onListNamed name: String, displayOptions: DisplayOptions = .incomplete) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [calendar], displayOptions: .all) { reminders in
+        self.reminders(on: [calendar], displayOptions: displayOptions) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(name)")
                 exit(1)

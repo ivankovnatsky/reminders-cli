@@ -213,8 +213,28 @@ private struct Delete: ParsableCommand {
         help: "The index or id of the reminder to delete, see 'show' for indexes")
     var index: String
 
+    @Flag(help: "Show completed items only")
+    var onlyCompleted = false
+
+    @Flag(help: "Include completed items in search")
+    var includeCompleted = false
+
+    func validate() throws {
+        if self.onlyCompleted && self.includeCompleted {
+            throw ValidationError(
+                "Cannot specify both --show-completed and --only-completed")
+        }
+    }
+
     func run() {
-        reminders.delete(itemAtIndex: self.index, onListNamed: self.listName)
+        var displayOptions = DisplayOptions.incomplete
+        if self.onlyCompleted {
+            displayOptions = .complete
+        } else if self.includeCompleted {
+            displayOptions = .all
+        }
+
+        reminders.delete(itemAtIndex: self.index, onListNamed: self.listName, displayOptions: displayOptions)
     }
 }
 
@@ -242,6 +262,12 @@ private struct Edit: ParsableCommand {
         help: "The notes to set on the reminder, overwriting previous notes")
     var notes: String?
 
+    @Flag(help: "Show completed items only")
+    var onlyCompleted = false
+
+    @Flag(help: "Include completed items in search")
+    var includeCompleted = false
+
     @Argument(
         parsing: .remaining,
         help: "The new reminder contents")
@@ -251,15 +277,27 @@ private struct Edit: ParsableCommand {
         if self.reminder.isEmpty && self.notes == nil {
             throw ValidationError("Must specify either new reminder content or new notes")
         }
+        if self.onlyCompleted && self.includeCompleted {
+            throw ValidationError(
+                "Cannot specify both --show-completed and --only-completed")
+        }
     }
 
     func run() {
+        var displayOptions = DisplayOptions.incomplete
+        if self.onlyCompleted {
+            displayOptions = .complete
+        } else if self.includeCompleted {
+            displayOptions = .all
+        }
+
         let newText = self.reminder.joined(separator: " ")
         reminders.edit(
             itemAtIndex: self.index,
             onListNamed: self.listName,
             newText: newText.isEmpty ? nil : newText,
-            newNotes: self.notes
+            newNotes: self.notes,
+            displayOptions: displayOptions
         )
     }
 }
@@ -283,11 +321,32 @@ private struct Move: ParsableCommand {
         completion: .custom(listNameCompletion))
     var toListName: String
 
+    @Flag(help: "Show completed items only")
+    var onlyCompleted = false
+
+    @Flag(help: "Include completed items in search")
+    var includeCompleted = false
+
+    func validate() throws {
+        if self.onlyCompleted && self.includeCompleted {
+            throw ValidationError(
+                "Cannot specify both --show-completed and --only-completed")
+        }
+    }
+
     func run() {
+        var displayOptions = DisplayOptions.incomplete
+        if self.onlyCompleted {
+            displayOptions = .complete
+        } else if self.includeCompleted {
+            displayOptions = .all
+        }
+
         reminders.move(
             itemAtIndex: self.index,
             fromListNamed: self.fromListName,
-            toListNamed: self.toListName)
+            toListNamed: self.toListName,
+            displayOptions: displayOptions)
     }
 }
 

@@ -261,7 +261,7 @@ public final class Reminders {
         let targetCalendar = self.calendar(withName: targetName)
         let semaphore = DispatchSemaphore(value: 0)
 
-        self.reminders(on: [sourceCalendar], displayOptions: .incomplete) { reminders in
+        self.reminders(on: [sourceCalendar], displayOptions: .all) { reminders in
             guard let reminder = self.getReminder(from: reminders, at: index) else {
                 print("No reminder at index \(index) on \(sourceName)")
                 exit(1)

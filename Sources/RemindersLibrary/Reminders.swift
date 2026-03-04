@@ -387,11 +387,7 @@ public final class Reminders {
         }
 
         if let recurrence = recurrence {
-            let rule = EKRecurrenceRule(
-                recurrenceWith: recurrence.frequency,
-                interval: 1,
-                end: nil)
-            reminder.addRecurrenceRule(rule)
+            reminder.addRecurrenceRule(recurrence.recurrenceRule)
         }
 
         do {

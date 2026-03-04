@@ -369,9 +369,13 @@ public final class Reminders {
         toListNamed name: String,
         dueDateComponents: DateComponents?,
         priority: Priority,
+        recurrence: Recurrence?,
+        createList: Bool,
         outputFormat: OutputFormat)
     {
-        let calendar = self.calendar(withName: name)
+        let calendar = createList
+            ? self.calendarOrCreate(withName: name, source: self.getCalendars().first!.source)
+            : self.calendar(withName: name)
         let reminder = EKReminder(eventStore: Store)
         reminder.calendar = calendar
         reminder.title = string
@@ -380,6 +384,14 @@ public final class Reminders {
         reminder.priority = Int(priority.value.rawValue)
         if let dueDate = dueDateComponents?.date, dueDateComponents?.hour != nil {
             reminder.addAlarm(EKAlarm(absoluteDate: dueDate))
+        }
+
+        if let recurrence = recurrence {
+            let rule = EKRecurrenceRule(
+                recurrenceWith: recurrence.frequency,
+                interval: 1,
+                end: nil)
+            reminder.addRecurrenceRule(rule)
         }
 
         do {

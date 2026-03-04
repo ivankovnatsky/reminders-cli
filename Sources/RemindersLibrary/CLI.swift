@@ -153,6 +153,14 @@ private struct Add: ParsableCommand {
         help: "The notes to add to the reminder")
     var notes: String?
 
+    @Option(
+        name: [.customLong("repeat"), .customShort("r")],
+        help: "The recurrence interval, one of: daily, weekly, monthly, yearly")
+    var recurrence: Recurrence?
+
+    @Flag(help: "Create the list if it doesn't exist")
+    var create = false
+
     func run() {
         reminders.addReminder(
             string: self.reminder.joined(separator: " "),
@@ -160,6 +168,8 @@ private struct Add: ParsableCommand {
             toListNamed: self.listName,
             dueDateComponents: self.dueDate,
             priority: priority,
+            recurrence: recurrence,
+            createList: create,
             outputFormat: format)
     }
 }

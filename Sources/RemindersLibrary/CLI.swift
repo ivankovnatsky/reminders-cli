@@ -158,7 +158,7 @@ private struct Add: ParsableCommand {
         help: "The recurrence interval, one of: daily, weekly, monthly, yearly")
     var recurrence: Recurrence?
 
-    @Flag(help: "Create the list if it doesn't exist")
+    @Flag(name: .shortAndLong, help: "Create the list if it doesn't exist")
     var create = false
 
     func run() {
@@ -331,7 +331,7 @@ private struct Move: ParsableCommand {
         completion: .custom(listNameCompletion))
     var toListName: String
 
-    @Flag(help: "Create the destination list if it doesn't exist")
+    @Flag(name: .shortAndLong, help: "Create the destination list if it doesn't exist")
     var create = false
 
     @Flag(help: "Show completed items only")

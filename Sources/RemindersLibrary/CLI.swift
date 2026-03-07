@@ -226,7 +226,7 @@ private struct Delete: ParsableCommand {
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
-    @Flag(help: "Include completed items in search")
+    @Flag(help: "Include completed items in output")
     var includeCompleted = false
 
     func validate() throws {
@@ -275,7 +275,7 @@ private struct Edit: ParsableCommand {
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
-    @Flag(help: "Include completed items in search")
+    @Flag(help: "Include completed items in output")
     var includeCompleted = false
 
     @Argument(
@@ -337,7 +337,7 @@ private struct Move: ParsableCommand {
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
-    @Flag(help: "Include completed items in search")
+    @Flag(help: "Include completed items in output")
     var includeCompleted = false
 
     func validate() throws {

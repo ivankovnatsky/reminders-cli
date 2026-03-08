@@ -272,6 +272,14 @@ public final class Reminders {
                 reminder.notes = newNotes ?? reminder.notes
                 if let newDueDate = newDueDate {
                     reminder.dueDateComponents = newDueDate
+                    if let alarms = reminder.alarms {
+                        for alarm in alarms where alarm.structuredLocation == nil {
+                            reminder.removeAlarm(alarm)
+                        }
+                    }
+                    if let dueDate = newDueDate.date, newDueDate.hour != nil {
+                        reminder.addAlarm(EKAlarm(absoluteDate: dueDate))
+                    }
                 }
                 if let newPriority = newPriority {
                     reminder.priority = Int(newPriority.value.rawValue)

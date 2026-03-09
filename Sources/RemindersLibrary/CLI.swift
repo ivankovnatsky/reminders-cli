@@ -187,8 +187,13 @@ private struct Complete: ParsableCommand {
         help: "The index or id of the reminder to delete, see 'show' for indexes")
     var index: String
 
+    @Option(
+        name: .long,
+        help: "The completion date to set on the reminder")
+    var completionDate: DateComponents?
+
     func run() {
-        reminders.setComplete(true, itemAtIndex: self.index, onListNamed: self.listName)
+        reminders.setComplete(true, itemAtIndex: self.index, onListNamed: self.listName, completionDate: self.completionDate?.date)
     }
 }
 
@@ -287,6 +292,11 @@ private struct Edit: ParsableCommand {
         help: "The recurrence interval, one of: \(Recurrence.allCases.map(\.rawValue).joined(separator: ", "))")
     var recurrence: Recurrence?
 
+    @Option(
+        name: .long,
+        help: "The completion date to set on the reminder")
+    var completionDate: DateComponents?
+
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
@@ -299,8 +309,8 @@ private struct Edit: ParsableCommand {
     var reminder: [String] = []
 
     func validate() throws {
-        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil && self.recurrence == nil {
-            throw ValidationError("Must specify either new reminder content, notes, due date, priority, or repeat")
+        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil && self.recurrence == nil && self.completionDate == nil {
+            throw ValidationError("Must specify either new reminder content, notes, due date, priority, repeat, or completion date")
         }
         if self.onlyCompleted && self.includeCompleted {
             throw ValidationError(
@@ -325,6 +335,7 @@ private struct Edit: ParsableCommand {
             newDueDate: self.dueDate,
             newPriority: self.priority,
             newRecurrence: self.recurrence,
+            newCompletionDate: self.completionDate?.date,
             displayOptions: displayOptions
         )
     }

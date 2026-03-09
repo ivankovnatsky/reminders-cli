@@ -257,7 +257,7 @@ public final class Reminders {
         }
     }
 
-    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, newPriority: Priority? = nil, newRecurrence: Recurrence? = nil, displayOptions: DisplayOptions = .incomplete) {
+    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, newPriority: Priority? = nil, newRecurrence: Recurrence? = nil, newCompletionDate: Date? = nil, displayOptions: DisplayOptions = .incomplete) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
@@ -287,6 +287,9 @@ public final class Reminders {
                 if let newRecurrence = newRecurrence {
                     reminder.recurrenceRules?.forEach { reminder.removeRecurrenceRule($0) }
                     reminder.addRecurrenceRule(newRecurrence.recurrenceRule)
+                }
+                if let newCompletionDate = newCompletionDate {
+                    reminder.completionDate = newCompletionDate
                 }
                 try Store.save(reminder, commit: true)
                 print("Updated reminder '\(reminder.title!)'")
@@ -329,7 +332,7 @@ public final class Reminders {
         semaphore.wait()
     }
 
-    func setComplete(_ complete: Bool, itemAtIndex index: String, onListNamed name: String) {
+    func setComplete(_ complete: Bool, itemAtIndex index: String, onListNamed name: String, completionDate: Date? = nil) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
         let displayOptions = complete ? DisplayOptions.incomplete : .complete
@@ -344,6 +347,9 @@ public final class Reminders {
 
             do {
                 reminder.isCompleted = complete
+                if let completionDate = completionDate {
+                    reminder.completionDate = completionDate
+                }
                 try Store.save(reminder, commit: true)
                 print("\(action) '\(reminder.title!)'")
             } catch let error {

@@ -282,6 +282,11 @@ private struct Edit: ParsableCommand {
         help: "The priority to set on the reminder")
     var priority: Priority?
 
+    @Option(
+        name: [.customLong("repeat"), .customShort("r")],
+        help: "The recurrence interval, one of: \(Recurrence.allCases.map(\.rawValue).joined(separator: ", "))")
+    var recurrence: Recurrence?
+
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
@@ -294,8 +299,8 @@ private struct Edit: ParsableCommand {
     var reminder: [String] = []
 
     func validate() throws {
-        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil {
-            throw ValidationError("Must specify either new reminder content, notes, due date, or priority")
+        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil && self.recurrence == nil {
+            throw ValidationError("Must specify either new reminder content, notes, due date, priority, or repeat")
         }
         if self.onlyCompleted && self.includeCompleted {
             throw ValidationError(
@@ -319,6 +324,7 @@ private struct Edit: ParsableCommand {
             newNotes: self.notes,
             newDueDate: self.dueDate,
             newPriority: self.priority,
+            newRecurrence: self.recurrence,
             displayOptions: displayOptions
         )
     }

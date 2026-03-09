@@ -257,7 +257,7 @@ public final class Reminders {
         }
     }
 
-    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, newPriority: Priority? = nil, displayOptions: DisplayOptions = .incomplete) {
+    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, newPriority: Priority? = nil, newRecurrence: Recurrence? = nil, displayOptions: DisplayOptions = .incomplete) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
@@ -283,6 +283,10 @@ public final class Reminders {
                 }
                 if let newPriority = newPriority {
                     reminder.priority = Int(newPriority.value.rawValue)
+                }
+                if let newRecurrence = newRecurrence {
+                    reminder.recurrenceRules?.forEach { reminder.removeRecurrenceRule($0) }
+                    reminder.addRecurrenceRule(newRecurrence.recurrenceRule)
                 }
                 try Store.save(reminder, commit: true)
                 print("Updated reminder '\(reminder.title!)'")

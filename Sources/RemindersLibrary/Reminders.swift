@@ -257,7 +257,7 @@ public final class Reminders {
         }
     }
 
-    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, newPriority: Priority? = nil, newRecurrence: Recurrence? = nil, newCompletionDate: Date? = nil, displayOptions: DisplayOptions = .incomplete) {
+    func edit(itemAtIndex index: String, onListNamed name: String, newText: String?, newNotes: String?, newDueDate: DateComponents? = nil, clearDueDate: Bool = false, newPriority: Priority? = nil, newRecurrence: Recurrence? = nil, newCompletionDate: Date? = nil, displayOptions: DisplayOptions = .incomplete) {
         let calendar = self.calendar(withName: name)
         let semaphore = DispatchSemaphore(value: 0)
 
@@ -270,7 +270,15 @@ public final class Reminders {
             do {
                 reminder.title = newText ?? reminder.title
                 reminder.notes = newNotes ?? reminder.notes
-                if let newDueDate = newDueDate {
+                if clearDueDate {
+                    reminder.dueDateComponents = nil
+                    if let alarms = reminder.alarms {
+                        for alarm in alarms where alarm.structuredLocation == nil {
+                            reminder.removeAlarm(alarm)
+                        }
+                    }
+                    reminder.recurrenceRules?.forEach { reminder.removeRecurrenceRule($0) }
+                } else if let newDueDate = newDueDate {
                     reminder.dueDateComponents = newDueDate
                     if let alarms = reminder.alarms {
                         for alarm in alarms where alarm.structuredLocation == nil {

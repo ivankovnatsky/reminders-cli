@@ -297,6 +297,9 @@ private struct Edit: ParsableCommand {
         help: "The completion date to set on the reminder")
     var completionDate: DateComponents?
 
+    @Flag(help: "Clear the due date on the reminder")
+    var clearDueDate = false
+
     @Flag(help: "Show completed items only")
     var onlyCompleted = false
 
@@ -309,8 +312,11 @@ private struct Edit: ParsableCommand {
     var reminder: [String] = []
 
     func validate() throws {
-        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil && self.recurrence == nil && self.completionDate == nil {
+        if self.reminder.isEmpty && self.notes == nil && self.dueDate == nil && self.priority == nil && self.recurrence == nil && self.completionDate == nil && !self.clearDueDate {
             throw ValidationError("Must specify either new reminder content, notes, due date, priority, repeat, or completion date")
+        }
+        if self.dueDate != nil && self.clearDueDate {
+            throw ValidationError("Cannot specify both --due-date and --clear-due-date")
         }
         if self.onlyCompleted && self.includeCompleted {
             throw ValidationError(
@@ -333,6 +339,7 @@ private struct Edit: ParsableCommand {
             newText: newText.isEmpty ? nil : newText,
             newNotes: self.notes,
             newDueDate: self.dueDate,
+            clearDueDate: self.clearDueDate,
             newPriority: self.priority,
             newRecurrence: self.recurrence,
             newCompletionDate: self.completionDate?.date,

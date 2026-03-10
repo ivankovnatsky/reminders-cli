@@ -16,6 +16,7 @@ extension EKReminder: @retroactive Encodable {
         case startDate
         case dueDate
         case list
+        case recurrence
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -58,8 +59,53 @@ extension EKReminder: @retroactive Encodable {
         if let creationDate = self.creationDate {
             try container.encode(format(creationDate), forKey: .creationDate)
         }
+
+        if let rules = self.recurrenceRules, let rule = rules.first {
+            try container.encode(formatRecurrence(rule), forKey: .recurrence)
+        }
     }
-    
+
+    private func formatRecurrence(_ rule: EKRecurrenceRule) -> String {
+        let frequency: String
+        switch rule.frequency {
+        case .daily: frequency = "daily"
+        case .weekly: frequency = "weekly"
+        case .monthly: frequency = "monthly"
+        case .yearly: frequency = "yearly"
+        @unknown default: frequency = "unknown"
+        }
+
+        if let days = rule.daysOfTheWeek, !days.isEmpty {
+            let dayNames = days.map { day -> String in
+                switch day.dayOfTheWeek {
+                case .monday: return "Mon"
+                case .tuesday: return "Tue"
+                case .wednesday: return "Wed"
+                case .thursday: return "Thu"
+                case .friday: return "Fri"
+                case .saturday: return "Sat"
+                case .sunday: return "Sun"
+                @unknown default: return "?"
+                }
+            }
+            return "every \(dayNames.joined(separator: ", "))"
+        }
+
+        if rule.interval == 1 {
+            return frequency
+        }
+
+        let unit: String
+        switch rule.frequency {
+        case .daily: unit = "days"
+        case .weekly: unit = "weeks"
+        case .monthly: unit = "months"
+        case .yearly: unit = "years"
+        @unknown default: unit = "units"
+        }
+        return "every \(rule.interval) \(unit)"
+    }
+
     private func format(_ date: Date?) -> String? {
         if #available(macOS 12.0, *) {
             return date?.ISO8601Format()

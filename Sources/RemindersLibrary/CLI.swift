@@ -184,7 +184,7 @@ private struct Complete: ParsableCommand {
     var listName: String
 
     @Argument(
-        help: "The index or id of the reminder to delete, see 'show' for indexes")
+        help: "The index, id, or title of the reminder, see 'show' for indexes")
     var index: String
 
     @Option(
@@ -207,7 +207,7 @@ private struct Uncomplete: ParsableCommand {
     var listName: String
 
     @Argument(
-        help: "The index or id of the reminder to delete, see 'show' for indexes")
+        help: "The index, id, or title of the reminder, see 'show' for indexes")
     var index: String
 
     func run() {
@@ -225,7 +225,7 @@ private struct Delete: ParsableCommand {
     var listName: String
 
     @Argument(
-        help: "The index or id of the reminder to delete, see 'show' for indexes")
+        help: "The index, id, or title of the reminder, see 'show' for indexes")
     var index: String
 
     @Flag(help: "Show completed items only")
@@ -269,7 +269,7 @@ private struct Edit: ParsableCommand {
     var listName: String
 
     @Argument(
-        help: "The index or id of the reminder to delete, see 'show' for indexes")
+        help: "The index, id, or title of the reminder, see 'show' for indexes")
     var index: String
 
     @Option(
@@ -359,7 +359,7 @@ private struct Move: ParsableCommand {
     var fromListName: String
 
     @Argument(
-        help: "The index or id of the reminder to move, see 'show' for indexes")
+        help: "The index, id, or title of the reminder to move, see 'show' for indexes")
     var index: String
 
     @Argument(

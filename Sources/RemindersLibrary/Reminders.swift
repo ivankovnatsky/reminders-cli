@@ -501,6 +501,8 @@ public final class Reminders {
             return reminders[safe: index]
         } else {
             return reminders.first { $0.calendarItemExternalIdentifier == index }
+                ?? reminders.first { $0.title == index }
+                ?? reminders.first { $0.title.localizedCaseInsensitiveContains(index) }
         }
     }
 

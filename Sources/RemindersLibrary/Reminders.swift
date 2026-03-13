@@ -347,10 +347,20 @@ public final class Reminders {
         let action = complete ? "Completed" : "Uncompleted"
 
         self.reminders(on: [calendar], displayOptions: displayOptions) { reminders in
-            print(reminders.map { $0.title! })
             guard let reminder = self.getReminder(from: reminders, at: index) else {
-                print("No reminder at index \(index) on \(name)")
-                exit(1)
+                // Check if the reminder exists but is already in the target state
+                let oppositeOptions: DisplayOptions = complete ? .complete : .incomplete
+                self.reminders(on: [calendar], displayOptions: oppositeOptions) { allReminders in
+                    if let found = self.getReminder(from: allReminders, at: index) {
+                        let state = complete ? "completed" : "uncompleted"
+                        print("Reminder '\(found.title ?? index)' is already \(state)")
+                        exit(0)
+                    } else {
+                        print("No reminder at index \(index) on \(name)")
+                        exit(1)
+                    }
+                }
+                return
             }
 
             do {
